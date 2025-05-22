@@ -172,3 +172,10 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# files
+DB.drawio
+Prueba técnica - Cloud Developer.pdf
+Flujo.drawio
+.$DB.drawio.bkp
+.$Flujo.drawio.bkp
