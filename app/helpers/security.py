@@ -1,4 +1,5 @@
 import bcrypt
+import re
 
 
 class Security:
@@ -24,3 +25,11 @@ class Security:
             )
         except ValueError:
             return False
+
+    @staticmethod
+    def is_hashed(password: str) -> bool:
+        """
+        Verifica si una contraseña está cifrada con bcrypt.
+        """
+        pattern = r'^\$2[abxy]?\$[0-9]{1,2}\$[./A-Za-z0-9]{53}$'
+        return bool(re.match(pattern, password))

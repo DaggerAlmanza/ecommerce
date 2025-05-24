@@ -10,8 +10,8 @@ class UserRole(str, Enum):
 
 class User(BaseModel):
     username: str = Field(..., description="Username")
-    password_hash: str = Field(..., description="Password hash")
     email: EmailStr = Field(..., description="Email")
+    password_hash: str = Field(..., description="Password hash")
     role: UserRole = Field(..., description="Role")
     adress: Optional[str] = Field(
         None,

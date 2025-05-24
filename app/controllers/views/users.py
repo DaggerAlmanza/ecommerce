@@ -6,7 +6,7 @@ from app.controllers.serializers.response import (
     Response as ResponseSerializer
 )
 from app.controllers.serializers.users import (
-    User as userSerializer
+    User as userSerializer,
 )
 from app.services import users as user_service
 from app.controllers.views.authenticate import get_current_user
@@ -23,7 +23,7 @@ router = APIRouter()
 async def create_users(
     request: userSerializer,
 ):
-    response = user_service.save_service(
+    response = user_service.save(
         request.model_dump()
     )
     return JSONResponse(
@@ -39,12 +39,13 @@ async def create_users(
 )
 async def update_users(
     request: userSerializer,
-    id: str,
+    id: int,
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = user_service.update_service(
+    response = user_service.update(
         id,
-        request.model_dump()
+        request.model_dump(),
+        current_user
     )
     return JSONResponse(
         status_code=response.pop("status_code"),
@@ -58,10 +59,10 @@ async def update_users(
     response_model=ResponseSerializer
 )
 async def get_users(
-    id: str,
+    id: int,
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = user_service.get_service(id)
+    response = user_service.get_by_id(id, current_user)
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response
@@ -76,8 +77,7 @@ async def get_users(
 async def get_all_users(
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    print(current_user)
-    response = user_service.get_all_service()
+    response = user_service.get_all(current_user)
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response

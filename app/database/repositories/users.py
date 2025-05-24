@@ -19,7 +19,6 @@ class User(Repository):
             "username",
             "password_hash",
             "email",
-            "role",
             "adress"
         ]
         GeneralHelpers.setter_object_attrs(data, keys, params)

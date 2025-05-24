@@ -142,12 +142,14 @@ class Users(Base):
 
     orders = relationship("Orders", back_populates="user")
     carts = relationship("Carts", back_populates="user", uselist=False)
+    products_created = relationship("Products", back_populates="creator")
 
     def to_json(self, *args, **kwargs):
         return {
             "id": self.id,
             "username": self.username,
             "email": self.email,
+            "password_hash": self.password_hash,
             "role": self.role.value,
             "adress": self.adress,
             "created_at": str(self.created_at),
@@ -164,6 +166,7 @@ class Products(Base):
     price = Column(DECIMAL(10, 2), nullable=False)
     stock_quantity = Column(Integer, nullable=False, default=0)
     image_url = Column(String(255), nullable=True)
+    creator_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(
         TIMESTAMP,
         server_default=func.now(),
@@ -178,6 +181,7 @@ class Products(Base):
 
     cart_items = relationship("CartItems", back_populates="product")
     order_items = relationship("OrderItems", back_populates="product")
+    creator = relationship("Users", back_populates="products_created")
 
     def to_json(self, *args, **kwargs):
         return {
