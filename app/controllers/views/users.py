@@ -8,11 +8,12 @@ from app.controllers.serializers.response import (
 from app.controllers.serializers.users import (
     User as userSerializer,
 )
-from app.services import users as user_service
+from app.services.users import UserService
 from app.controllers.views.authenticate import get_current_user
 
 
 router = APIRouter()
+user_service = UserService()
 
 
 @router.post(

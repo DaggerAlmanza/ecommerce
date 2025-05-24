@@ -5,7 +5,10 @@ from typing import Union
 from app.config.constants import (
     ALGORITHM, SECRET_KEY
 )
-from app.services import users as user_service
+from app.services.users import UserService
+
+
+user_service = UserService()
 
 
 def authenticate_user(username: str, password: str):

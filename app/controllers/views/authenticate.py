@@ -9,11 +9,12 @@ from app.config.constants import (
 )
 from app.controllers.serializers.authenticate import TokenData, MetaSerializer
 from app.controllers.serializers.users import UserAuthentication
-from app.services import users as user_service
+from app.services.users import UserService
 
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+user_service = UserService()
 
 
 @router.get("/token", tags=["session"])
