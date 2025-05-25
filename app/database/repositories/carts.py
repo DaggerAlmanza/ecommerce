@@ -29,6 +29,14 @@ class Cart(Repository):
         self.session.close()
         return True
 
-    def get_by_email(self, email: str) -> dict:
-        data = self.session.query(self.conn).filter_by(email=email).first()
-        return data
+    def get_user_id_by_cart_id(self, id: int) -> dict:
+        cart = self.get_by_id(id)
+        if cart:
+            cart = cart.to_json()
+        return cart
+
+    def get_card_id_by_user_id(self, user_id: int) -> int:
+        cart = self.get_by_data_dictionary({"user_id": user_id})
+        if cart:
+            cart = cart.to_json()
+        return cart if not cart else cart.get("id")

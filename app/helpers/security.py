@@ -31,5 +31,5 @@ class Security:
         """
         Verifica si una contraseña está cifrada con bcrypt.
         """
-        pattern = r'^\$2[abxy]?\$[0-9]{1,2}\$[./A-Za-z0-9]{53}$'
+        pattern = r"^\$2[abxy]\$\d{2}\$[./0-9A-Za-z]{53}$"
         return bool(re.match(pattern, password))

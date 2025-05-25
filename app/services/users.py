@@ -34,6 +34,23 @@ class UserService:
             "status_code": CREATED if response else OK
         }
 
+    def delete_by_id(self, id: int, user: dict) -> dict:
+        if id != user.get("id"):
+            return {
+                "data": False,
+                "message": "El usuario no tiene permiso para eliminar este usuario",
+                "status_code": FORBIDDEN
+            }
+        response = self.users_repository.delete_query(id)
+        return {
+            "data": response,
+            "message":
+                "El usuario fue eliminado"
+                if response else
+                "El usuario no fue eliminado",
+            "status_code": OK
+        }
+
     def update(self, id: int, data: dict, user: dict) -> dict:
         if id != user.get("id"):
             return {

@@ -21,3 +21,5 @@ SECRET_KEY = ""
 
 ADMIN_ROL = "admin"
 USER_ROL = "user"
+
+NOT_ALLOWED = "No tiene permiso para hacer esta acción"

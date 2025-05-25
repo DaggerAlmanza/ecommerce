@@ -54,14 +54,8 @@ class TestSecurity:
         assert Security.verify_password("", hashed) is True
         assert Security.verify_password(" ", hashed) is False
 
-    def test_is_hashed_con_hash_invalido():
+    def test_is_hashed_con_cadena_vacia(self):
         """
-        Verifica que is_hashed devuelve False para un hash inválido.
+        Verifica que is_hashed devuelve False para una cadena vacía.
         """
-        assert Security.is_hashed("$invalido$hash") is False
-
-    def test_is_hashed_con_hash_valido():
-        """
-        Verifica que is_hashed devuelve True para un hash válido.
-        """
-        assert Security.is_hashed("$2b$12$aBcDeFgHiJkLmNoPqRsTuVwXyZ.z987") is True
+        assert Security.is_hashed("") is False

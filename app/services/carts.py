@@ -1,5 +1,6 @@
 from app.config.constants import (
-    CREATED, OK, FORBIDDEN, ADMIN_ROL
+    CREATED, OK, FORBIDDEN, ADMIN_ROL,
+    NOT_ALLOWED
 )
 from app.database.repositories.carts import (
     Cart as CartsRepository
@@ -12,19 +13,15 @@ carts_repository = CartsRepository()
 security_helpers = Security()
 general_helpers = GeneralHelpers()
 
-NOT_ALLOWED = "No tiene permiso para hacer esta consulta"
-
 
 class CartService:
 
     def __init__(self):
         self.carts_repository = carts_repository
-        self.security_helpers = security_helpers
-        self.general_helpers = general_helpers
 
-    def save(self, current_user: dict) -> dict:
+    def save(self, user: dict) -> dict:
         data = {
-            "user_id": current_user.get("id")
+            "user_id": user.get("id")
         }
         response = self.carts_repository.create(data)
         return {

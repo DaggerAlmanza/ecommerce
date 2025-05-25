@@ -37,10 +37,10 @@ class OrderStatus(enum.Enum):
 
 
 class Orders(Base):
-    __tablename__ = 'orders'
+    __tablename__ = "orders"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     total_amount = Column(DECIMAL(10, 2), nullable=False)
     status = Column(
         Enum(OrderStatus), default=OrderStatus.PENDING, nullable=False
@@ -70,11 +70,11 @@ class Orders(Base):
 
 
 class OrderItems(Base):
-    __tablename__ = 'order_items'
+    __tablename__ = "order_items"
 
     id = Column(Integer, primary_key=True, index=True)
-    order_id = Column(Integer, ForeignKey('orders.id'), nullable=False)
-    product_id = Column(Integer, ForeignKey('products.id'), nullable=False)
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
     quantity = Column(Integer, nullable=False)
     price_at_purchase = Column(DECIMAL(10, 2), nullable=False)
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
@@ -83,7 +83,7 @@ class OrderItems(Base):
     product = relationship("Products", back_populates="order_items")
 
     __table_args__ = (
-        UniqueConstraint('order_id', 'product_id', name='_order_product_uc'),
+        UniqueConstraint("order_id", "product_id", name="_order_product_uc"),
     )
 
     def to_json(self, *args, **kwargs):
@@ -98,11 +98,12 @@ class OrderItems(Base):
 
 
 class Carts(Base):
-    __tablename__ = 'carts'
+    __tablename__ = "carts"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(
-        Integer, ForeignKey('users.id'), unique=True, nullable=False
+        Integer, ForeignKey("users.id", ondelete="CASCADE"),
+        unique=True
     )
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
 
@@ -142,7 +143,9 @@ class Users(Base):
 
     orders = relationship("Orders", back_populates="user")
     carts = relationship("Carts", back_populates="user", uselist=False)
-    products_created = relationship("Products", back_populates="creator")
+    products_created = relationship(
+        "Products", back_populates="creator", cascade="all, delete-orphan"
+    )
 
     def to_json(self, *args, **kwargs):
         return {
@@ -158,7 +161,7 @@ class Users(Base):
 
 
 class Products(Base):
-    __tablename__ = 'products'
+    __tablename__ = "products"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), unique=True, nullable=False)
@@ -166,7 +169,9 @@ class Products(Base):
     price = Column(DECIMAL(10, 2), nullable=False)
     stock_quantity = Column(Integer, nullable=False, default=0)
     image_url = Column(String(255), nullable=True)
-    creator_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    creator_id = Column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
     created_at = Column(
         TIMESTAMP,
         server_default=func.now(),
@@ -197,11 +202,11 @@ class Products(Base):
 
 
 class CartItems(Base):
-    __tablename__ = 'cart_items'
+    __tablename__ = "cart_items"
 
     id = Column(Integer, primary_key=True, index=True)
-    cart_id = Column(Integer, ForeignKey('carts.id'), nullable=False)
-    product_id = Column(Integer, ForeignKey('products.id'), nullable=False)
+    cart_id = Column(Integer, ForeignKey("carts.id"), nullable=False)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
     quantity = Column(Integer, nullable=False)
     price_at_add = Column(DECIMAL(10, 2), nullable=False)
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
@@ -216,13 +221,27 @@ class CartItems(Base):
     product = relationship("Products", back_populates="cart_items")
 
     __table_args__ = (
-        UniqueConstraint('cart_id', 'product_id', name='_cart_product_uc'),
+        UniqueConstraint("cart_id", "product_id", name="_cart_product_uc"),
     )
 
     def to_json(self, *args, **kwargs):
         return {
             "id": self.id,
             "cart_id": self.cart_id,
+            "product_id": self.product_id,
+            "quantity": self.quantity,
+            "price_at_add": self.price_at_add,
+            "created_at": str(self.created_at),
+            "updated_at": str(self.updated_at),
+        }
+
+    def to_dict(self, *args, **kwargs):
+        cart_data = None
+        if self.cart:
+            cart_data = self.cart.to_dict()
+        return {
+            "id": self.id,
+            "cart_id": cart_data,
             "product_id": self.product_id,
             "quantity": self.quantity,
             "price_at_add": self.price_at_add,

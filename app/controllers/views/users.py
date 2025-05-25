@@ -83,3 +83,19 @@ async def get_all_users(
         status_code=response.pop("status_code"),
         content=response
     )
+
+
+@router.delete(
+    "/users/{id}",
+    tags=["users"],
+    response_model=ResponseSerializer
+)
+async def delete_user(
+    id: int,
+    current_user: Annotated[dict, Depends(get_current_user)]
+):
+    response = user_service.delete_by_id(id, current_user)
+    return JSONResponse(
+        status_code=response.pop("status_code"),
+        content=response
+    )

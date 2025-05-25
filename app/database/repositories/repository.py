@@ -20,13 +20,19 @@ class Repository():
             return False
 
     def delete_query(self, id: int):
-        data = self.get_by_id(id)
-        if not data:
+        try:
+            data = self.get_by_id(id)
+            if not data:
+                return False
+            self.session.delete(data)
+            self.session.commit()
+            return True
+        except Exception as e:
+            self.session.rollback()
+            print(f"Error al eliminar el registro: {e}")
             return False
-        self.session.delete(data)
-        self.session.commit()
-        self.session.close()
-        return True
+        finally:
+            self.session.close()
 
     def get_all(self):
         data = self.session.query(self.conn).all()
