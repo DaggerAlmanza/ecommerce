@@ -41,7 +41,7 @@ class UserService:
                 "message": "El usuario no tiene permiso para eliminar este usuario",
                 "status_code": FORBIDDEN
             }
-        response = self.users_repository.delete_query(id)
+        response = self.users_repository.delete(id)
         return {
             "data": response,
             "message":
@@ -90,20 +90,14 @@ class UserService:
                 "status_code": FORBIDDEN
             }
 
-    def get_all(self, user: dict) -> dict:
-        if user.get("role") == ADMIN_ROL:
-            response = self.users_repository.get_all()
-            response = [data_json.to_json() for data_json in response]
-            return {
-                "data": response,
-                "message": "Todos los usuario en la base de datos",
-                "status_code": OK
-            }
+    def get_all(self) -> dict:
+        response = self.users_repository.get_all()
+        response = [data_json.to_json() for data_json in response]
         return {
-                "data": [],
-                "message": "El usuario no tiene permiso para hacer esta consulta",
-                "status_code": FORBIDDEN
-            }
+            "data": response,
+            "message": "Todos los usuario en la base de datos",
+            "status_code": OK
+        }
 
     def get_user_by_email_and_password(self, email: str, password: str) -> dict:
         response = self.users_repository.get_by_email(email)

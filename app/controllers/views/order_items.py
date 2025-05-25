@@ -3,41 +3,27 @@ from starlette.responses import JSONResponse
 from typing import Annotated
 
 from app.controllers.serializers.response import (
-    Response as ResponseSerializer
+    Response as ResponseSerializer,
 )
-from app.services.carts import CartService
+from app.services.order_items import OrderItemsService
 from app.controllers.views.authenticate import get_current_user
 from app.decorators import user_forbidden
 
+
 router = APIRouter()
-cart_service = CartService()
-
-
-@router.post(
-    "/carts",
-    tags=["carts"],
-    response_model=ResponseSerializer
-)
-async def create_carts(
-    current_user: Annotated[dict, Depends(get_current_user)]
-):
-    response = cart_service.save(current_user)
-    return JSONResponse(
-        status_code=response.pop("status_code"),
-        content=response
-    )
+order_items_service = OrderItemsService()
 
 
 @router.get(
-    "/carts/{id}",
-    tags=["carts"],
+    "/order_items/{id}",
+    tags=["order_items"],
     response_model=ResponseSerializer
 )
-async def get_carts(
+async def get_order_items(
     id: int,
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = cart_service.get_by_id(id, current_user)
+    response = order_items_service.get_by_id(id)
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response
@@ -45,15 +31,14 @@ async def get_carts(
 
 
 @router.get(
-    "/carts",
-    tags=["carts"],
+    "/order_items",
+    tags=["order_items"],
     response_model=ResponseSerializer
 )
-@user_forbidden
-async def get_all_carts(
+async def get_all_order_items(
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = cart_service.get_all(current_user)
+    response = order_items_service.get_all()
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response

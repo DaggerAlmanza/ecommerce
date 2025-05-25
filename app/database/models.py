@@ -193,9 +193,10 @@ class Products(Base):
             "id": self.id,
             "name": self.name,
             "description": self.description,
-            "price": self.price,
+            "price": str(self.price),
             "stock_quantity": self.stock_quantity,
             "image_url": self.image_url,
+            "creator_id": self.creator_id,
             "created_at": str(self.created_at),
             "updated_at": str(self.updated_at),
         }

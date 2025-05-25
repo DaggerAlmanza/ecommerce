@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from app.helpers.security import Security
 
 
@@ -20,3 +22,10 @@ class GeneralHelpers:
         Actualiza la contraseña de un usuario
         """
         data["password_hash"] = security.hash_password(password)
+
+    @staticmethod
+    def multiply_and_convert_to_decimal(
+        number_float: float, number_int: int
+    ) -> Decimal:
+        result = round(float(number_float * number_int), 2)
+        return Decimal(str(result))

@@ -19,7 +19,19 @@ class Repository():
             print(error)
             return False
 
-    def delete_query(self, id: int):
+    def delete_directly(self, data: object):
+        try:
+            self.session.delete(data)
+            self.session.commit()
+            return True
+        except Exception as e:
+            self.session.rollback()
+            print(f"Error al eliminar el registro: {e}")
+            return False
+        finally:
+            self.session.close()
+
+    def delete(self, id: int):
         try:
             data = self.get_by_id(id)
             if not data:
@@ -42,6 +54,10 @@ class Repository():
         data = self.session.query(self.conn).filter_by(id=id).first()
         return data
 
-    def get_by_data_dictionary(self, data: dict):
+    def get_first_match(self, data: dict):
         data = self.session.query(self.conn).filter_by(**data).first()
+        return data
+
+    def get_all_match(self, data: dict):
+        data = self.session.query(self.conn).filter_by(**data).all()
         return data

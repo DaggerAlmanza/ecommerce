@@ -59,3 +59,16 @@ class TestSecurity:
         Verifica que is_hashed devuelve False para una cadena vacía.
         """
         assert Security.is_hashed("") is False
+
+    def test_is_hashed_con_hash_invalido(self):
+        """
+        Verifica que is_hashed devuelve False para un hash inválido.
+        """
+        assert Security.is_hashed("$invalido$hash") is False
+
+    def test_is_hashed_con_hash_valido(self):
+        """
+        Verifica que is_hashed devuelve True para un hash válido.
+        """
+        response = Security.is_hashed("$2b$12$BZhnnYxkeQ6Znr0KnYzFkOjVUspjiByChPCHgRN3BM1wsRrwW6qWS")
+        assert response is True

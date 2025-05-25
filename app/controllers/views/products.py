@@ -3,31 +3,63 @@ from starlette.responses import JSONResponse
 from typing import Annotated
 
 from app.controllers.serializers.response import (
-    Response as ResponseSerializer
+    Response as ResponseSerializer,
 )
-from app.controllers.serializers.users import (
-    User as userSerializer,
+from app.controllers.serializers.products import (
+    Products as ProductsSerializer,
+    ProductsUpdate as ProductsUpdateSerializer
 )
-from app.services.users import UserService
+from app.services.products import ProductsService
 from app.controllers.views.authenticate import get_current_user
 from app.decorators import user_forbidden
 
 
 router = APIRouter()
-user_service = UserService()
+products_service = ProductsService()
 
 
 @router.post(
-    "/users",
-    tags=["users"],
+    "/products",
+    tags=["products"],
     response_model=ResponseSerializer
 )
-async def create_users(
-    request: userSerializer,
+@user_forbidden
+async def create_products(
+    request: ProductsSerializer,
+    current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = user_service.save(
-        request.model_dump()
+    response = products_service.save(request.model_dump(), current_user)
+    return JSONResponse(
+        status_code=response.pop("status_code"),
+        content=response
     )
+
+
+@router.get(
+    "/products/{id}",
+    tags=["products"],
+    response_model=ResponseSerializer
+)
+async def get_products(
+    id: int,
+    current_user: Annotated[dict, Depends(get_current_user)]
+):
+    response = products_service.get_by_id(id)
+    return JSONResponse(
+        status_code=response.pop("status_code"),
+        content=response
+    )
+
+
+@router.get(
+    "/products",
+    tags=["products"],
+    response_model=ResponseSerializer
+)
+async def get_all_products(
+    current_user: Annotated[dict, Depends(get_current_user)]
+):
+    response = products_service.get_all()
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response
@@ -35,16 +67,17 @@ async def create_users(
 
 
 @router.put(
-    "/users/{id}",
-    tags=["users"],
+    "/products/{id}",
+    tags=["products"],
     response_model=ResponseSerializer
 )
-async def update_users(
-    request: userSerializer,
+@user_forbidden
+async def update_products(
+    request: ProductsUpdateSerializer,
     id: int,
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = user_service.update(
+    response = products_service.update(
         id,
         request.model_dump(),
         current_user
@@ -55,48 +88,17 @@ async def update_users(
     )
 
 
-@router.get(
-    "/users/{id}",
-    tags=["users"],
-    response_model=ResponseSerializer
-)
-async def get_users(
-    id: int,
-    current_user: Annotated[dict, Depends(get_current_user)]
-):
-    response = user_service.get_by_id(id, current_user)
-    return JSONResponse(
-        status_code=response.pop("status_code"),
-        content=response
-    )
-
-
-@router.get(
-    "/users",
-    tags=["users"],
+@router.delete(
+    "/products/{id}",
+    tags=["products"],
     response_model=ResponseSerializer
 )
 @user_forbidden
-async def get_all_users(
-    current_user: Annotated[dict, Depends(get_current_user)]
-):
-    response = user_service.get_all()
-    return JSONResponse(
-        status_code=response.pop("status_code"),
-        content=response
-    )
-
-
-@router.delete(
-    "/users/{id}",
-    tags=["users"],
-    response_model=ResponseSerializer
-)
-async def delete_user(
+async def delete_products(
     id: int,
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = user_service.delete_by_id(id, current_user)
+    response = products_service.delete_by_id(id, current_user)
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response

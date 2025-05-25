@@ -1,25 +1,27 @@
 from app.config.db_connection import session
 from app.helpers.util import GeneralHelpers
-from app.database.models import Users as UsersModel
+from app.database.models import Products as ProductsModel
 from app.database.repositories.repository import Repository
 
 
-class User(Repository):
+class Products(Repository):
 
     def __init__(self):
         self.session = session
-        self.conn = UsersModel
+        self.conn = ProductsModel
 
     def __update(
         self,
-        data: UsersModel,
+        data: ProductsModel,
         params: dict
     ) -> None:
         keys = [
-            "username",
-            "password_hash",
-            "email",
-            "adress"
+            "name",
+            "description",
+            "price",
+            "stock_quantity",
+            "image_url",
+            "creator_id",
         ]
         GeneralHelpers.setter_object_attrs(data, keys, params)
 
@@ -31,7 +33,3 @@ class User(Repository):
         self.session.commit()
         self.session.close()
         return True
-
-    def get_by_email(self, email: str) -> dict:
-        data = self.session.query(self.conn).filter_by(email=email).first()
-        return data

@@ -54,16 +54,10 @@ class CartService:
             }
 
     def get_all(self, user: dict) -> dict:
-        if user.get("role") == ADMIN_ROL:
-            response = self.carts_repository.get_all()
-            response = [data_json.to_json() for data_json in response]
-            return {
-                "data": response,
-                "message": "Todos los carrito de compras en la base de datos",
-                "status_code": OK
-            }
+        response = self.carts_repository.get_all()
+        response = [data_json.to_json() for data_json in response]
         return {
-                "data": [],
-                "message": NOT_ALLOWED,
-                "status_code": FORBIDDEN
-            }
+            "data": response,
+            "message": "Todos los carrito de compras en la base de datos",
+            "status_code": OK
+        }

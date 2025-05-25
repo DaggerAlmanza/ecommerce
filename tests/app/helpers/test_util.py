@@ -1,4 +1,5 @@
 from unittest.mock import patch
+from decimal import Decimal
 
 from app.helpers.util import GeneralHelpers
 
@@ -137,3 +138,34 @@ class TestGeneralHelpers:
 
         mock_security_instance.hash_password.assert_called_once_with(None)
         assert user_data["password_hash"] == "hashed_none"
+
+    def test_multiply_and_convert_to_decimal_basic(self):
+        """
+        Verifica la multiplicación del número flotante y entero, asegurando una conversión decimal correcta.
+        """
+        helper = GeneralHelpers()
+        result = helper.multiply_and_convert_to_decimal(10.5, 2)
+        assert isinstance(result, Decimal)
+        assert result == Decimal('21.00')
+
+    def test_multiply_and_convert_to_decimal_with_rounding(self):
+        """
+        Verifica el redondeo a 2 cifras decimales
+        """
+        helper = GeneralHelpers()
+        result = helper.multiply_and_convert_to_decimal(3.333, 3)
+        assert isinstance(result, Decimal)
+        assert result == Decimal('10.00')
+
+        result_2 = helper.multiply_and_convert_to_decimal(0.1234, 10)
+        assert isinstance(result_2, Decimal)
+        assert result_2 == Decimal('1.23')
+
+    def test_multiply_and_convert_to_decimal_zero_int(self):
+        """
+        Verifica el resultado con la multiplicación por cero.
+        """
+        helper = GeneralHelpers()
+        result = helper.multiply_and_convert_to_decimal(50.75, 0)
+        assert isinstance(result, Decimal)
+        assert result == Decimal('0.00')
