@@ -10,7 +10,6 @@ from app.controllers.serializers.users import (
 )
 from app.services.users import UserService
 from app.controllers.views.authenticate import get_current_user
-from app.decorators import user_forbidden
 
 
 router = APIRouter()
@@ -28,6 +27,21 @@ async def create_users(
     response = user_service.save(
         request.model_dump()
     )
+    return JSONResponse(
+        status_code=response.pop("status_code"),
+        content=response
+    )
+
+
+@router.get(
+    "/users/admin",
+    tags=["admin"],
+    response_model=ResponseSerializer
+)
+async def get_all_users_deleted(
+    current_user: Annotated[dict, Depends(get_current_user)]
+):
+    response = user_service.get_all_deleted(current_user)
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response
@@ -76,11 +90,10 @@ async def get_users(
     tags=["users"],
     response_model=ResponseSerializer
 )
-@user_forbidden
 async def get_all_users(
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = user_service.get_all()
+    response = user_service.get_all(current_user)
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response

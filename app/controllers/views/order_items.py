@@ -14,6 +14,21 @@ order_items_service = OrderItemsService()
 
 
 @router.get(
+    "/order_items",
+    tags=["order_items"],
+    response_model=ResponseSerializer
+)
+async def get_all_order_items(
+    current_user: Annotated[dict, Depends(get_current_user)]
+):
+    response = order_items_service.get_all()
+    return JSONResponse(
+        status_code=response.pop("status_code"),
+        content=response
+    )
+
+
+@router.get(
     "/order_items/{id}",
     tags=["order_items"],
     response_model=ResponseSerializer
@@ -23,21 +38,6 @@ async def get_order_items(
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
     response = order_items_service.get_by_id(id)
-    return JSONResponse(
-        status_code=response.pop("status_code"),
-        content=response
-    )
-
-
-@router.get(
-    "/order_items",
-    tags=["order_items"],
-    response_model=ResponseSerializer
-)
-async def get_all_order_items(
-    current_user: Annotated[dict, Depends(get_current_user)]
-):
-    response = order_items_service.get_all()
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response

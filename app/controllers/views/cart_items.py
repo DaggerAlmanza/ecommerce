@@ -34,22 +34,6 @@ async def create_cart_items(
 
 
 @router.get(
-    "/cart_items/{id}",
-    tags=["cart_items"],
-    response_model=ResponseSerializer
-)
-async def get_cart_items(
-    id: int,
-    current_user: Annotated[dict, Depends(get_current_user)]
-):
-    response = cart_items_service.get_by_id(id, current_user)
-    return JSONResponse(
-        status_code=response.pop("status_code"),
-        content=response
-    )
-
-
-@router.get(
     "/cart_items",
     tags=["cart_items"],
     response_model=ResponseSerializer
@@ -73,6 +57,22 @@ async def get_all_cart_items_by_admin(
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
     response = cart_items_service.get_all_by_admin(current_user)
+    return JSONResponse(
+        status_code=response.pop("status_code"),
+        content=response
+    )
+
+
+@router.get(
+    "/cart_items/{id}",
+    tags=["cart_items"],
+    response_model=ResponseSerializer
+)
+async def get_cart_items(
+    id: int,
+    current_user: Annotated[dict, Depends(get_current_user)]
+):
+    response = cart_items_service.get_by_id(current_user, id)
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response

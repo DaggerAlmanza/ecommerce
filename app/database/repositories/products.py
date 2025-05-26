@@ -26,7 +26,7 @@ class Products(Repository):
         GeneralHelpers.setter_object_attrs(data, keys, params)
 
     def edit(self, id: int, params: dict):
-        data = self.get_by_id(id)
+        data = self.find_one_not_deleted(id)
         if not data:
             return False
         self.__update(data, params)

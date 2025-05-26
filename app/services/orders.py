@@ -40,10 +40,10 @@ class OrdersService:
             {"cart_id": cart_id}
         )
         if cart_items:
-            cart_items = [data_json.to_json() for data_json in cart_items]
+            cart_items_to_json = [data_json.to_json() for data_json in cart_items]
         order_items = []
         total_amount = Decimal(0)
-        for item in cart_items:
+        for item in cart_items_to_json:
             total_amount += Decimal(item["price_at_add"])
             order_items.append(
                 {
@@ -52,14 +52,13 @@ class OrdersService:
                     "price_at_purchase": item["price_at_add"]
                 }
             )
-
         orders = {
             "user_id": user.get("id"),
-            "total_Amount": total_amount,
+            "total_amount": total_amount,
             "status": "PENDING"
         }
         response = self.orders_repository.create_with_transaction(
-            user, orders, order_items
+            orders, order_items, cart_items
         )
         return {
             "data": response,

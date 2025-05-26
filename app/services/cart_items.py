@@ -1,5 +1,6 @@
 from app.config.constants import (
-    CREATED, OK, FORBIDDEN, NOT_ALLOWED
+    CREATED, OK, FORBIDDEN, NOT_ALLOWED,
+    UNPROCESSABLE_ENTITY,
 )
 from app.database.repositories.cart_items import (
     CartItem as CartItemssRepository
@@ -57,9 +58,15 @@ class CartItemsService:
                         } tenemos {
                         self.product.get("stock_quantity")
                     }",
-                "status_code": FORBIDDEN
+                "status_code": UNPROCESSABLE_ENTITY
             }
         cart_id = self.get_card_id_by_user_id(user.get("id"))
+        if not cart_id:
+            return {
+                "data": {},
+                "message": "El usuario no tiene carrito de compras",
+                "status_code": UNPROCESSABLE_ENTITY
+            }
         data["cart_id"] = cart_id
         data["price_at_add"] = self.general_helpers.multiply_and_convert_to_decimal(
             self.product.get("price"), data.get("quantity")
@@ -145,7 +152,7 @@ class CartItemsService:
                         } tenemos {
                         self.product.get("stock_quantity")
                     }",
-                "status_code": FORBIDDEN
+                "status_code": UNPROCESSABLE_ENTITY
             }
         data["price_at_add"] = self.general_helpers.multiply_and_convert_to_decimal(
             self.product.get("price"), data.get("quantity")

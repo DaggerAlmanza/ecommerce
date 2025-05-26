@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 
 from app.helpers.security import Security
@@ -29,3 +30,7 @@ class GeneralHelpers:
     ) -> Decimal:
         result = round(float(float(number_float) * number_int), 2)
         return Decimal(str(result))
+
+    @staticmethod
+    def get_datetime():
+        return datetime.now()

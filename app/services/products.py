@@ -31,7 +31,7 @@ class ProductsService:
         }
 
     def get_by_id(self, id: int) -> dict:
-        response = self.products_repository.get_by_id(id)
+        response = self.products_repository.find_one_not_deleted(id)
         if response:
             response = response.to_json()
         return {
@@ -41,8 +41,18 @@ class ProductsService:
             "status_code": OK
         }
 
+    @user_forbidden
+    def get_all_deleted(self, user: dict) -> dict:
+        response = self.products_repository.find_many_deleted()
+        response = [data_json.to_json() for data_json in response]
+        return {
+            "data": response,
+            "message": "Todos los productos eliminados en la base de datos",
+            "status_code": OK
+        }
+
     def get_all(self) -> dict:
-        response = self.products_repository.get_all()
+        response = self.products_repository.find_many_not_deleted()
         response = [data_json.to_json() for data_json in response]
         return {
             "data": response,
@@ -70,7 +80,7 @@ class ProductsService:
 
     @user_forbidden
     def delete_by_id(self, user: dict, id: int) -> dict:
-        product = self.products_repository.get_by_id(id)
+        product = self.products_repository.find_one_not_deleted(id)
         if not product:
             return {
                 "data": False,
@@ -84,7 +94,7 @@ class ProductsService:
                 "message": NOT_ALLOWED,
                 "status_code": FORBIDDEN
             }
-        response = self.products_repository.delete_directly(product)
+        response = self.products_repository.soft_delete_directly(product)
         return {
             "data": response,
             "message":

@@ -6,6 +6,7 @@ from app.database.repositories.users import (
 )
 from app.helpers.security import Security
 from app.helpers.util import GeneralHelpers
+from app.decorators import user_forbidden
 
 
 users_repository = UsersRepository()
@@ -41,7 +42,7 @@ class UserService:
                 "message": "El usuario no tiene permiso para eliminar este usuario",
                 "status_code": FORBIDDEN
             }
-        response = self.users_repository.delete(id)
+        response = self.users_repository.soft_delete(id)
         return {
             "data": response,
             "message":
@@ -75,7 +76,7 @@ class UserService:
 
     def get_by_id(self, id: int, user: dict) -> dict:
         if id == user.get("id") or user.get("role") == ADMIN_ROL:
-            response = self.users_repository.get_by_id(id)
+            response = self.users_repository.find_one_not_deleted(id)
             if response:
                 response = response.to_json()
             return {
@@ -90,12 +91,23 @@ class UserService:
                 "status_code": FORBIDDEN
             }
 
-    def get_all(self) -> dict:
-        response = self.users_repository.get_all()
+    @user_forbidden
+    def get_all(self, user: dict) -> dict:
+        response = self.users_repository.find_many_not_deleted()
         response = [data_json.to_json() for data_json in response]
         return {
             "data": response,
             "message": "Todos los usuario en la base de datos",
+            "status_code": OK
+        }
+
+    @user_forbidden
+    def get_all_deleted(self, user: dict) -> dict:
+        response = self.users_repository.find_many_deleted()
+        response = [data_json.to_json() for data_json in response]
+        return {
+            "data": response,
+            "message": "Todos los usuario borrados en la base de datos",
             "status_code": OK
         }
 

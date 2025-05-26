@@ -34,6 +34,21 @@ async def create_products(
 
 
 @router.get(
+    "/products/admin",
+    tags=["products"],
+    response_model=ResponseSerializer
+)
+async def get_all_products_deleted(
+    current_user: Annotated[dict, Depends(get_current_user)]
+):
+    response = products_service.get_all_deleted(current_user)
+    return JSONResponse(
+        status_code=response.pop("status_code"),
+        content=response
+    )
+
+
+@router.get(
     "/products/{id}",
     tags=["products"],
     response_model=ResponseSerializer

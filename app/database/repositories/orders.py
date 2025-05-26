@@ -1,21 +1,14 @@
 from app.config.db_connection import session
-from app.helpers.util import GeneralHelpers
+from app.database.models import OrderItems as OrderItemsModel
 from app.database.models import Orders as OrdersModel
-from app.database.repositories.repository import Repository
-from app.database.repositories.order_items import (
-    OrderItems as OrderItemsRepository
-)
 from app.database.repositories.cart_items import (
     CartItem as CartItemsRepository
 )
-from app.database.repositories.carts import (
-    Cart as CartsRepository
-)
+from app.database.repositories.repository import Repository
+from app.helpers.util import GeneralHelpers
 
 
-cart_items = CartItemsRepository()
-carts = CartsRepository()
-order_items = OrderItemsRepository()
+cart_items_repository = CartItemsRepository()
 
 
 class Orders(Repository):
@@ -23,10 +16,9 @@ class Orders(Repository):
     def __init__(self):
         self.session = session
         self.conn = OrdersModel
-        self.order_items = order_items
-        self.cart_items = cart_items
-        self.cart = carts
-    
+        self.order_items = OrderItemsModel
+        self.cart_items_repository = cart_items_repository
+
     def __update(
         self,
         data: OrdersModel,
@@ -47,19 +39,30 @@ class Orders(Repository):
         return True
 
     def create_with_transaction(
-        self, user: dict, orders: dict, order_items: list
+        self, orders: dict, order_items: list, cart_items: list
     ) -> bool:
-        pass
-        # """
-        #     consultar todos los items del carrito por id_cart
-        #     crear orden
-        #     crear cada items de la orden
-        #     eliminar los items del carrito
-        # """
-        # try:
-        #     with self.session.begin():
-                
-
-        # except Exception as e:
-        #     print(f"Error al hacer el proceso (orden, articulo y carrito): {e}")
-        #     return False
+        """
+            crear orden
+            crear cada items de la orden
+            eliminar los items del carrito
+        """
+        try:
+            # with session.begin():
+            order = self.conn(**orders)
+            self.session.add(order)
+            self.session.flush()
+            for item in order_items:
+                item.update({"order_id": order.id})
+                order_item = self.order_items(**item)
+                self.session.add(order_item)
+                self.session.flush()
+            for item in cart_items:
+                self.session.delete(item)
+            self.session.commit()
+            return True
+        except Exception as e:
+            self.session.rollback()
+            print(f"Error al hacer el proceso (orden, articulo y carrito): {e}")
+            return False
+        finally:
+            session.close()

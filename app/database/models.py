@@ -140,6 +140,7 @@ class Users(Base):
         onupdate=func.now(),
         nullable=True
     )
+    deleted_at = Column(TIMESTAMP, default=None, nullable=True)
 
     orders = relationship("Orders", back_populates="user")
     carts = relationship("Carts", back_populates="user", uselist=False)
@@ -183,6 +184,7 @@ class Products(Base):
         onupdate=func.now(),
         nullable=True
     )
+    deleted_at = Column(TIMESTAMP, default=None, nullable=True)
 
     cart_items = relationship("CartItems", back_populates="product")
     order_items = relationship("OrderItems", back_populates="product")
@@ -239,7 +241,7 @@ class CartItems(Base):
     def to_dict(self, *args, **kwargs):
         cart_data = None
         if self.cart:
-            cart_data = self.cart.to_dict()
+            cart_data = self.cart.to_json()
         return {
             "id": self.id,
             "cart_id": cart_data,
