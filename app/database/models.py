@@ -231,7 +231,7 @@ class CartItems(Base):
             "cart_id": self.cart_id,
             "product_id": self.product_id,
             "quantity": self.quantity,
-            "price_at_add": self.price_at_add,
+            "price_at_add": str(self.price_at_add),
             "created_at": str(self.created_at),
             "updated_at": str(self.updated_at),
         }

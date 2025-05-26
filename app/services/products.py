@@ -1,10 +1,10 @@
 from app.config.constants import (
-    CREATED, OK, FORBIDDEN, ADMIN_ROL,
-    NOT_ALLOWED
+    CREATED, OK, FORBIDDEN, NOT_ALLOWED,
 )
 from app.database.repositories.products import (
     Products as ProductsRepository
 )
+from app.decorators import user_forbidden
 
 
 products_repository = ProductsRepository()
@@ -16,7 +16,8 @@ class ProductsService:
     def __init__(self):
         self.products_repository = products_repository
 
-    def save(self, data: dict, user: dict) -> dict:
+    @user_forbidden
+    def save(self, user: dict, data: dict) -> dict:
         data["creator_id"] = user.get("id")
         data["image_url"] = "url_test"
         response = self.products_repository.create(data)
@@ -49,7 +50,8 @@ class ProductsService:
             "status_code": OK
         }
 
-    def update(self, id: int, data: dict, user: dict) -> dict:
+    @user_forbidden
+    def update(self, user: dict, id: int, data: dict) -> dict:
         if data.get("creator_id") != user.get("id"):
             return {
                 "data": False,
@@ -66,7 +68,8 @@ class ProductsService:
             "status_code": OK
         }
 
-    def delete_by_id(self, id: int, user: dict) -> dict:
+    @user_forbidden
+    def delete_by_id(self, user: dict, id: int) -> dict:
         product = self.products_repository.get_by_id(id)
         if not product:
             return {

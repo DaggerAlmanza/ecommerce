@@ -18,7 +18,7 @@ class CartItem(Repository):
         keys = [
             "product_id",
             "quantity",
-            "price_at_add"
+            "price_at_add",
         ]
         GeneralHelpers.setter_object_attrs(data, keys, params)
 

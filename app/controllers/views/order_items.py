@@ -7,7 +7,6 @@ from app.controllers.serializers.response import (
 )
 from app.services.order_items import OrderItemsService
 from app.controllers.views.authenticate import get_current_user
-from app.decorators import user_forbidden
 
 
 router = APIRouter()

@@ -1,11 +1,13 @@
 from fastapi import APIRouter
 
 from app.controllers.views import (
-    users,
     authenticate,
-    carts,
     cart_items,
+    carts,
+    order_items,
+    orders,
     products,
+    users,
 )
 
 urls = APIRouter()
@@ -28,6 +30,16 @@ urls.include_router(
 
 urls.include_router(
     cart_items.router,
+    prefix="/api/v1",
+)
+
+urls.include_router(
+    order_items.router,
+    prefix="/api/v1",
+)
+
+urls.include_router(
+    orders.router,
     prefix="/api/v1",
 )
 

@@ -4,8 +4,21 @@ from app.config.constants import (
 from app.database.repositories.orders import (
     Orders as OrdersRepository
 )
+from app.database.repositories.carts import (
+    Cart as CartRepository
+)
+from app.database.repositories.cart_items import (
+    CartItem as CartItemsRepository
+)
+from app.decorators import (
+    ensure_cart_and_items_exist,
+    admin_forbidden,
+    user_forbidden,
+)
+from decimal import Decimal
 
-
+cart_items_repository = CartItemsRepository()
+cart_repository = CartRepository()
 orders_repository = OrdersRepository()
 NO_EXISTENT_PRODUCT = "La orden no existe"
 
@@ -14,35 +27,40 @@ class OrdersService:
 
     def __init__(self):
         self.orders_repository = orders_repository
+        self.cart = cart_repository
+        self.cart_items = cart_items_repository
 
-    def save(self, id_cart: int, user: dict) -> dict:
-        """
-        consultar todos los items del carrito por id_cart
-        crear orden
-        crear cada items de la orden
-        eliminar los items del carrito
-        """
-        data = {
-            "cart_id": id_cart,
+    @admin_forbidden
+    @ensure_cart_and_items_exist
+    def save(self, user: dict) -> dict:
+        cart_id = self.cart.get_card_id_by_user_id(
+            user.get("id")
+        )
+        cart_items = self.cart_items.get_all_match(
+            {"cart_id": cart_id}
+        )
+        if cart_items:
+            cart_items = [data_json.to_json() for data_json in cart_items]
+        order_items = []
+        total_amount = Decimal(0)
+        for item in cart_items:
+            total_amount += Decimal(item["price_at_add"])
+            order_items.append(
+                {
+                    "product_id": item["product_id"],
+                    "quantity": item["quantity"],
+                    "price_at_purchase": item["price_at_add"]
+                }
+            )
+
+        orders = {
+            "user_id": user.get("id"),
+            "total_Amount": total_amount,
             "status": "PENDING"
         }
-        cart = self.orders_repository.get_cart_by_id(id_cart)
-        if not cart:
-            return {
-                "data": {},
-                "message": NO_EXISTENT_PRODUCT,
-                "status_code": FORBIDDEN
-            }
-        if cart.user_id != user.get("id"):
-            return {
-                "data": {},
-                "message": NOT_ALLOWED,
-                "status_code": FORBIDDEN
-            }
-        
-        data["creator_id"] = user.get("id")
-        data["image_url"] = "url_test"
-        response = self.orders_repository.create(data)
+        response = self.orders_repository.create_with_transaction(
+            user, orders, order_items
+        )
         return {
             "data": response,
             "message":
@@ -72,6 +90,7 @@ class OrdersService:
             "status_code": OK
         }
 
+    @user_forbidden
     def update(self, id: int, data: dict) -> dict:
         response = self.orders_repository.edit(id, data)
         return {

@@ -46,11 +46,20 @@ class Orders(Repository):
         self.session.close()
         return True
 
-    def create_with_transaction(self, data: dict) -> bool:
-        try:
-            with self.session.begin():
+    def create_with_transaction(
+        self, user: dict, orders: dict, order_items: list
+    ) -> bool:
+        pass
+        # """
+        #     consultar todos los items del carrito por id_cart
+        #     crear orden
+        #     crear cada items de la orden
+        #     eliminar los items del carrito
+        # """
+        # try:
+        #     with self.session.begin():
+                
 
-        
-        except Exception as e:
-            print(f"Error al hacer el proceso (orden, articulo y carrito): {e}")
-            return False
+        # except Exception as e:
+        #     print(f"Error al hacer el proceso (orden, articulo y carrito): {e}")
+        #     return False

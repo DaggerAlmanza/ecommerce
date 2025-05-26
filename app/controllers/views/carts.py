@@ -7,7 +7,7 @@ from app.controllers.serializers.response import (
 )
 from app.services.carts import CartService
 from app.controllers.views.authenticate import get_current_user
-from app.decorators import user_forbidden
+
 
 router = APIRouter()
 cart_service = CartService()
@@ -49,7 +49,6 @@ async def get_carts(
     tags=["carts"],
     response_model=ResponseSerializer
 )
-@user_forbidden
 async def get_all_carts(
     current_user: Annotated[dict, Depends(get_current_user)]
 ):

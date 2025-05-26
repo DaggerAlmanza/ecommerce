@@ -2,13 +2,12 @@ from fastapi import APIRouter, Depends
 from starlette.responses import JSONResponse
 from typing import Annotated
 
+from app.controllers.serializers.orders import Orders as OrdersSerializer
 from app.controllers.serializers.response import (
     Response as ResponseSerializer,
 )
-from app.services.orders import OrdersService
 from app.controllers.views.authenticate import get_current_user
-from app.decorators import admin_forbidden, user_forbidden
-from app.controllers.serializers.orders import Orders as OrdersSerializer
+from app.services.orders import OrdersService
 
 
 router = APIRouter()
@@ -16,16 +15,14 @@ orders_service = OrdersService()
 
 
 @router.post(
-    "/orders/{id_cart}",
+    "/orders/",
     tags=["orders"],
     response_model=ResponseSerializer
 )
-@admin_forbidden
 async def create_orders(
-    id_cart: int,
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = orders_service.save(id_cart, current_user)
+    response = orders_service.save(current_user)
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response
@@ -68,7 +65,6 @@ async def get_all_orders(
     tags=["orders"],
     response_model=ResponseSerializer
 )
-@user_forbidden
 async def update_orders(
     request: OrdersSerializer,
     id: int,

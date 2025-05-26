@@ -7,10 +7,10 @@ from app.controllers.serializers.response import (
 )
 from app.controllers.serializers.cart_items import (
     CartItems as CartItemsSerializer,
+    CartItemsUpdate as CartItemsUpdateSerializer
 )
 from app.services.cart_items import CartItemsService
 from app.controllers.views.authenticate import get_current_user
-from app.decorators import admin_forbidden, user_forbidden
 
 
 router = APIRouter()
@@ -22,12 +22,11 @@ cart_items_service = CartItemsService()
     tags=["cart_items"],
     response_model=ResponseSerializer
 )
-@admin_forbidden
 async def create_cart_items(
     request: CartItemsSerializer,
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = cart_items_service.save(request.model_dump(), current_user)
+    response = cart_items_service.save(current_user, request.model_dump())
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response
@@ -39,7 +38,6 @@ async def create_cart_items(
     tags=["cart_items"],
     response_model=ResponseSerializer
 )
-@admin_forbidden
 async def get_cart_items(
     id: int,
     current_user: Annotated[dict, Depends(get_current_user)]
@@ -56,7 +54,6 @@ async def get_cart_items(
     tags=["cart_items"],
     response_model=ResponseSerializer
 )
-@admin_forbidden
 async def get_all_cart_items(
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
@@ -72,11 +69,10 @@ async def get_all_cart_items(
     tags=["admin"],
     response_model=ResponseSerializer
 )
-@user_forbidden
 async def get_all_cart_items_by_admin(
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = cart_items_service.get_all_by_admin()
+    response = cart_items_service.get_all_by_admin(current_user)
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response
@@ -88,16 +84,15 @@ async def get_all_cart_items_by_admin(
     tags=["cart_items"],
     response_model=ResponseSerializer
 )
-@admin_forbidden
 async def update_cart_items(
-    request: CartItemsSerializer,
+    request: CartItemsUpdateSerializer,
     id: int,
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
     response = cart_items_service.update(
+        current_user,
         id,
-        request.model_dump(),
-        current_user
+        request.model_dump()
     )
     return JSONResponse(
         status_code=response.pop("status_code"),
@@ -110,12 +105,11 @@ async def update_cart_items(
     tags=["cart_items"],
     response_model=ResponseSerializer
 )
-@admin_forbidden
 async def delete_cart_items(
     id: int,
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = cart_items_service.delete_by_id(id, current_user)
+    response = cart_items_service.delete_by_id(current_user, id)
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response

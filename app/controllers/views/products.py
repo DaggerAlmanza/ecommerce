@@ -11,7 +11,6 @@ from app.controllers.serializers.products import (
 )
 from app.services.products import ProductsService
 from app.controllers.views.authenticate import get_current_user
-from app.decorators import user_forbidden
 
 
 router = APIRouter()
@@ -23,12 +22,11 @@ products_service = ProductsService()
     tags=["products"],
     response_model=ResponseSerializer
 )
-@user_forbidden
 async def create_products(
     request: ProductsSerializer,
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = products_service.save(request.model_dump(), current_user)
+    response = products_service.save(current_user, request.model_dump())
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response
@@ -71,16 +69,15 @@ async def get_all_products(
     tags=["products"],
     response_model=ResponseSerializer
 )
-@user_forbidden
 async def update_products(
     request: ProductsUpdateSerializer,
     id: int,
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
     response = products_service.update(
+        current_user,
         id,
-        request.model_dump(),
-        current_user
+        request.model_dump()
     )
     return JSONResponse(
         status_code=response.pop("status_code"),
@@ -93,12 +90,11 @@ async def update_products(
     tags=["products"],
     response_model=ResponseSerializer
 )
-@user_forbidden
 async def delete_products(
     id: int,
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = products_service.delete_by_id(id, current_user)
+    response = products_service.delete_by_id(current_user, id)
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response

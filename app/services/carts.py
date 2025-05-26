@@ -7,6 +7,7 @@ from app.database.repositories.carts import (
 )
 from app.helpers.security import Security
 from app.helpers.util import GeneralHelpers
+from app.decorators import user_forbidden
 
 
 carts_repository = CartsRepository()
@@ -53,6 +54,7 @@ class CartService:
                 "status_code": FORBIDDEN
             }
 
+    @user_forbidden
     def get_all(self, user: dict) -> dict:
         response = self.carts_repository.get_all()
         response = [data_json.to_json() for data_json in response]

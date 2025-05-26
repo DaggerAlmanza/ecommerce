@@ -27,5 +27,5 @@ class GeneralHelpers:
     def multiply_and_convert_to_decimal(
         number_float: float, number_int: int
     ) -> Decimal:
-        result = round(float(number_float * number_int), 2)
+        result = round(float(float(number_float) * number_int), 2)
         return Decimal(str(result))
