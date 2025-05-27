@@ -62,7 +62,6 @@ def ensure_cart_and_items_exist(func):
     """
     @wraps(func)
     def wrapper(self, user: dict, *args, **kwargs):
-        # Access the user ID from the user dictionary
         user_id = user.get("id")
 
         cart_id = _cart_repository_decorator.get_card_id_by_user_id(user_id)

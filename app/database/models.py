@@ -62,7 +62,7 @@ class Orders(Base):
         return {
             "id": self.id,
             "user_id": self.user_id,
-            "total_amount": self.total_amount,
+            "total_amount": str(self.total_amount),
             "status": self.status.value,
             "created_at": str(self.created_at),
             "updated_at": str(self.updated_at),
@@ -91,7 +91,7 @@ class OrderItems(Base):
             "id": self.id,
             "order_id": self.order_id,
             "product_id": self.product_id,
-            "quantity": self.quantity,
+            "quantity": str(self.quantity),
             "price_at_purchase": self.price_at_purchase,
             "created_at": str(self.created_at),
         }

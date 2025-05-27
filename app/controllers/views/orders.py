@@ -15,30 +15,16 @@ orders_service = OrdersService()
 
 
 @router.post(
-    "/orders/",
+    "/orders",
     tags=["orders"],
     response_model=ResponseSerializer
 )
 async def create_orders(
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = orders_service.save(current_user)
-    return JSONResponse(
-        status_code=response.pop("status_code"),
-        content=response
-    )
-
-
-@router.get(
-    "/orders/{id}",
-    tags=["orders"],
-    response_model=ResponseSerializer
-)
-async def get_orders(
-    id: int,
-    current_user: Annotated[dict, Depends(get_current_user)]
-):
-    response = orders_service.get_by_id(id)
+    # response = orders_service.save(current_user)
+    # response = orders_service.save_internal(current_user)
+    response = orders_service.save_async(current_user)
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response
@@ -60,6 +46,22 @@ async def get_all_orders(
     )
 
 
+@router.get(
+    "/orders/tasks/{task_id}",
+    tags=["orders"],
+    response_model=ResponseSerializer
+)
+async def get_task_status(
+    task_id: str,
+    current_user: Annotated[dict, Depends(get_current_user)]
+):
+    response = orders_service.get_task_status(task_id)
+    return JSONResponse(
+        status_code=response.pop("status_code"),
+        content=response
+    )
+
+
 @router.put(
     "/orders/{id}",
     tags=["orders"],
@@ -74,6 +76,22 @@ async def update_orders(
         id,
         request.model_dump()
     )
+    return JSONResponse(
+        status_code=response.pop("status_code"),
+        content=response
+    )
+
+
+@router.get(
+    "/orders/{id}",
+    tags=["orders"],
+    response_model=ResponseSerializer
+)
+async def get_orders(
+    id: int,
+    current_user: Annotated[dict, Depends(get_current_user)]
+):
+    response = orders_service.get_by_id(id)
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response

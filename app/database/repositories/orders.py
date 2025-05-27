@@ -1,12 +1,11 @@
 from app.config.db_connection import session
-from app.database.models import OrderItems as OrderItemsModel
 from app.database.models import Orders as OrdersModel
 from app.database.repositories.cart_items import (
     CartItem as CartItemsRepository
 )
 from app.database.repositories.repository import Repository
 from app.helpers.util import GeneralHelpers
-
+from app.database.models import OrderItems as OrderItemsModel
 
 cart_items_repository = CartItemsRepository()
 
@@ -17,7 +16,6 @@ class Orders(Repository):
         self.session = session
         self.conn = OrdersModel
         self.order_items = OrderItemsModel
-        self.cart_items_repository = cart_items_repository
 
     def __update(
         self,
@@ -41,13 +39,7 @@ class Orders(Repository):
     def create_with_transaction(
         self, orders: dict, order_items: list, cart_items: list
     ) -> bool:
-        """
-            crear orden
-            crear cada items de la orden
-            eliminar los items del carrito
-        """
         try:
-            # with session.begin():
             order = self.conn(**orders)
             self.session.add(order)
             self.session.flush()
