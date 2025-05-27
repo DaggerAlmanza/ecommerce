@@ -92,7 +92,7 @@ class OrderItems(Base):
             "order_id": self.order_id,
             "product_id": self.product_id,
             "quantity": str(self.quantity),
-            "price_at_purchase": self.price_at_purchase,
+            "price_at_purchase": str(self.price_at_purchase),
             "created_at": str(self.created_at),
         }
 

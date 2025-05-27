@@ -43,7 +43,7 @@ class OrdersService:
 
     @admin_forbidden
     @ensure_cart_and_items_exist
-    def save_async(self, user: Dict[str, Any]) -> Dict[str, Any]:
+    def save_async(self, user: dict) -> dict:
         """
         Método para encolar la creación asíncrona de órdenes
         """
@@ -97,9 +97,9 @@ class OrdersService:
                 }
             return response
         except Exception as e:
+            print(f"Error al obtener el estado de la tarea: {e}")
             return {
                 "state": "ERROR",
-                "error": str(e),
                 "message": "Error consultando el estado de la tarea",
                 "status_code": INTERNAL_SERVER_ERROR
             }
@@ -117,7 +117,7 @@ class OrdersService:
             product = self.products.get_by_id(id)
             if not product.stock_quantity >= quantity:
                 return {
-                    "data": {},
+                    "data": False,
                     "message":
                         f"No tenemos suficiente stock en existencia para despachar {
                             quantity
