@@ -14,6 +14,10 @@ class Products(BaseModel):
         0,
         description="Stock quantity"
     )
+    image_url: Optional[str] = Field(
+        None,
+        description="Image"
+    )
 
 
 class ProductsUpdate(BaseModel):
@@ -27,8 +31,8 @@ class ProductsUpdate(BaseModel):
         0,
         description="Stock quantity"
     )
-    image_url: str = Field(
-        ...,
+    image_url: Optional[str] = Field(
+        None,
         description="Image"
     )
     creator_id: int = Field(..., description="Creator id")

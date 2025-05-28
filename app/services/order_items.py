@@ -1,5 +1,5 @@
 from app.config.constants import (
-    CREATED, OK, FORBIDDEN, ADMIN_ROL,
+    CREATED, OK, FORBIDDEN,
     NOT_ALLOWED
 )
 from app.database.repositories.order_items import (
@@ -46,6 +46,17 @@ class OrderItemsService:
         return {
             "data": response,
             "message": "Todos los productos en la base de datos",
+            "status_code": OK
+        }
+
+    def get_all_by_user(self, user: dict) -> dict:
+        response = self.order_items_repository.get_all_by_user(
+            user.get("id")
+        )
+        response = [data_json.to_json() for data_json in response]
+        return {
+            "data": response,
+            "message": "Todos los productos del usuario",
             "status_code": OK
         }
 

@@ -1,6 +1,8 @@
-from app.config.celery import celery_app
-from typing import Dict, Any
 import logging
+from typing import Dict, Any
+
+from app.config.celery import celery_app
+from app.helpers.util import GeneralHelpers
 
 
 logger = logging.getLogger(__name__)
@@ -35,6 +37,7 @@ def process_order(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
                 "is_created": result.get("data")
             }
         )
+        GeneralHelpers.send_email(user_data.get("email"))
         return result
     except Exception as exc:
         logger.error(f"Error procesando orden para usuario {

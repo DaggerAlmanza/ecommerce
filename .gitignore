@@ -182,3 +182,4 @@ Flujo.drawio
 tests.py
 .vscode/
 .$DB.drawio.dtmp
+/image/*

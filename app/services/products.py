@@ -1,3 +1,5 @@
+from fastapi import UploadFile
+
 from app.config.constants import (
     CREATED, OK, FORBIDDEN, NOT_ALLOWED,
 )
@@ -5,8 +7,9 @@ from app.database.repositories.products import (
     Products as ProductsRepository
 )
 from app.decorators import user_forbidden
+from app.helpers.util import GeneralHelpers
 
-
+general_helpers = GeneralHelpers()
 products_repository = ProductsRepository()
 NO_EXISTENT_PRODUCT = "El producto no existe"
 
@@ -15,11 +18,11 @@ class ProductsService:
 
     def __init__(self):
         self.products_repository = products_repository
+        self.general_helpers = general_helpers
 
     @user_forbidden
     def save(self, user: dict, data: dict) -> dict:
         data["creator_id"] = user.get("id")
-        data["image_url"] = "url_test"
         response = self.products_repository.create(data)
         return {
             "data": response,
@@ -27,6 +30,18 @@ class ProductsService:
                 "El producto fue creado"
                 if response else
                 "El producto no fue creado",
+            "status_code": CREATED if response else OK
+        }
+
+    @user_forbidden
+    def image_url(self, file: UploadFile) -> dict:
+        response = self.general_helpers.upload_file(file)
+        return {
+            "data": response,
+            "message":
+                "El archivo fue subido"
+                if response else
+                "El archivo no fue subido",
             "status_code": CREATED if response else OK
         }
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile
 from starlette.responses import JSONResponse
 from typing import Annotated
 
@@ -27,6 +27,22 @@ async def create_products(
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
     response = products_service.save(current_user, request.model_dump())
+    return JSONResponse(
+        status_code=response.pop("status_code"),
+        content=response
+    )
+
+
+@router.post(
+    "/products/upload_file",
+    tags=["products"],
+    response_model=ResponseSerializer
+)
+async def create_image_url(
+    file: UploadFile,
+    current_user: Annotated[dict, Depends(get_current_user)]
+):
+    response = products_service.image_url(file)
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response
