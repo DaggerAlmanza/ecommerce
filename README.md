@@ -57,7 +57,22 @@ $ venv/Scripts/activate
 $ pip3 install -r requirements.txt
 ```
 
+## Ejecutar con Docker Compose
+1. Para poner en marcha la aplicación y todos sus servicios definidos en `docker-compose.yml`
+Simplemente ejecuta el siguiente comando en tu terminal, desde el directorio raíz del proyecto donde se encuentra el archivo `docker-compose.yml`:
+
+```sh
+docker-compose up
+```
+
+2. Detener y Eliminar Contenedores
+Para detener y eliminar los contenedores, redes y volúmenes (si no son persistentes) creados por Docker Compose, usa:
+```sh
+docker-compose down
+```
+
 ## Configuración
+Si se va a utilizar el entorno de desarrollo y el proyecto en local.
 
 1. Se debe configurar el archivo .env con las credenciales de acceso a la base de datos.
 ```sh
