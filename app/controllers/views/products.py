@@ -51,7 +51,7 @@ async def create_image_url(
 
 @router.get(
     "/products/admin",
-    tags=["products"],
+    tags=["admin"],
     response_model=ResponseSerializer
 )
 async def get_all_products_deleted(

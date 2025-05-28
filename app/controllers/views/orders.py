@@ -22,8 +22,6 @@ orders_service = OrdersService()
 async def create_orders(
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    # response = orders_service.save(current_user)
-    # response = orders_service.save_internal(current_user)
     response = orders_service.save_async(current_user)
     return JSONResponse(
         status_code=response.pop("status_code"),

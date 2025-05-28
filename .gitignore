@@ -183,3 +183,5 @@ tests.py
 .vscode/
 .$DB.drawio.dtmp
 /image/*
+.$Flujo.drawio.dtmp
+.scannerwork/
