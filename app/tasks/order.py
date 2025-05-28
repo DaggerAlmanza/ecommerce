@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, Any
 
-from app.config.celery import celery_app
+from app.config.celery_config import celery_app
 from app.helpers.util import GeneralHelpers
 
 

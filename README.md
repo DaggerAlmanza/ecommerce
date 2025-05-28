@@ -79,7 +79,7 @@ $ uvicorn config:app --host=localhost --port=8000
 
 4. Inicia el worker de Celery (en una terminal separada):
 ```sh
-celery -A app.config.celery:celery_app worker --loglevel=info --queues=orders_queue --concurrency=1
+celery -A app.config.celery_config:celery_app worker --loglevel=info --queues=orders_queue --concurrency=1
 ```
 
 5. Crea una red Docker para que los contenedores puedan comunicarse:

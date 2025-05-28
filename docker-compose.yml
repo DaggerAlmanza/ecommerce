@@ -1,0 +1,78 @@
+version: '3.9'
+
+services:
+
+  db:
+    image: postgres:16-alpine
+    container_name: postgres-ecommerce
+    environment:
+      POSTGRES_DB: ecommerce
+      POSTGRES_USER: dagger
+      POSTGRES_PASSWORD: dager9123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ecommerce
+
+
+  redis:
+    image: redis:latest
+    container_name: redis-ecommerce
+    ports:
+      - "6377:6379"
+    networks:
+      - ecommerce
+
+
+  app:
+    build: .
+    container_name: fastapi_app
+    working_dir: /app
+    command: uvicorn app.config:app --host 0.0.0.0 --port 8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      POSTGRES_USER: dagger
+      POSTGRES_PASSWORD: dager9123
+      POSTGRES_DB: ecommerce
+      POSTGRES_HOST: db
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - db
+      - redis
+    networks:
+      - ecommerce
+
+
+  celery_worker:
+    build: .
+    container_name: celery_worker
+    working_dir: /app
+    command: python -m celery -A app.config.celery_config:celery_app worker --loglevel=info --queues=orders_queue --concurrency=1
+    volumes:
+      - .:/app
+    environment:
+      POSTGRES_USER: dagger
+      POSTGRES_PASSWORD: dager9123
+      POSTGRES_DB: ecommerce
+      POSTGRES_HOST: db
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - db
+      - redis
+      - app
+    networks:
+      - ecommerce
+
+volumes:
+  postgres_data:
+
+networks:
+  ecommerce:
+    driver: bridge

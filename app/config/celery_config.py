@@ -4,10 +4,15 @@ from celery import Celery
 
 def make_celery():
     """Configuración de Celery con Redis"""
+    redis_host = os.getenv("REDIS_HOST", "localhost")
+    redis_port = os.getenv("REDIS_PORT", "6379")
+
+    redis_url = f"redis://{redis_host}:{redis_port}/0"
+
     celery = Celery(
         "orders_app",
-        broker=os.getenv("REDIS_URL", "redis://localhost:6379/0"),
-        backend=os.getenv("REDIS_URL", "redis://localhost:6379/0"),
+        broker=redis_url,
+        backend=redis_url,
         include=["app.tasks.order"]
     )
     celery.conf.update(

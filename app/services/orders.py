@@ -66,7 +66,7 @@ class OrdersService:
         Obtener el estado de una tarea específica
         """
         try:
-            from app.config.celery import celery_app
+            from app.config.celery_config import celery_app
             task = celery_app.AsyncResult(task_id)
             if task.state == "PENDING":
                 response = {
