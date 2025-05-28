@@ -2,14 +2,12 @@ from decimal import Decimal
 from typing import Dict, Any
 
 from app.config.constants import (
-    CREATED,
-    OK,
-    INTERNAL_SERVER_ERROR,
-    UNPROCESSABLE_ENTITY,
     ACCEPTED,
-)
-from app.database.repositories.orders import (
-    Orders as OrdersRepository
+    CREATED,
+    INTERNAL_SERVER_ERROR,
+    NO_EXISTENT_PRODUCT,
+    OK,
+    UNPROCESSABLE_ENTITY,
 )
 from app.database.repositories.carts import (
     Cart as CartRepository
@@ -17,20 +15,22 @@ from app.database.repositories.carts import (
 from app.database.repositories.cart_items import (
     CartItem as CartItemsRepository
 )
+from app.database.repositories.orders import (
+    Orders as OrdersRepository
+)
+from app.database.repositories.products import Products as ProductsRepository
 from app.decorators import (
-    ensure_cart_and_items_exist,
     admin_forbidden,
+    ensure_cart_and_items_exist,
     user_forbidden,
 )
 from app.tasks.order import process_order
-from app.database.repositories.products import Products as ProductsRepository
 
 
 cart_items_repository = CartItemsRepository()
 cart_repository = CartRepository()
 orders_repository = OrdersRepository()
 products_repository = ProductsRepository()
-NO_EXISTENT_PRODUCT = "La orden no existe"
 
 
 class OrdersService:

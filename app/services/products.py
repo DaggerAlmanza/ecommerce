@@ -1,7 +1,11 @@
 from fastapi import UploadFile
 
 from app.config.constants import (
-    CREATED, OK, FORBIDDEN, NOT_ALLOWED,
+    CREATED,
+    FORBIDDEN,
+    NO_EXISTENT_PRODUCT,
+    NOT_ALLOWED,
+    OK,
 )
 from app.database.repositories.products import (
     Products as ProductsRepository
@@ -9,9 +13,9 @@ from app.database.repositories.products import (
 from app.decorators import user_forbidden
 from app.helpers.util import GeneralHelpers
 
+
 general_helpers = GeneralHelpers()
 products_repository = ProductsRepository()
-NO_EXISTENT_PRODUCT = "El producto no existe"
 
 
 class ProductsService:

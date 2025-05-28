@@ -1,6 +1,6 @@
 from app.config.constants import (
     CREATED, OK, FORBIDDEN,
-    NOT_ALLOWED
+    NOT_ALLOWED, NO_EXISTENT_PRODUCT
 )
 from app.database.repositories.order_items import (
     OrderItems as OrderItemsRepository
@@ -8,7 +8,6 @@ from app.database.repositories.order_items import (
 
 
 order_items_repository = OrderItemsRepository()
-NO_EXISTENT_PRODUCT = "El producto no existe"
 
 
 class OrderItemsService:

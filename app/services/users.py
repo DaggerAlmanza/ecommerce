@@ -4,9 +4,9 @@ from app.config.constants import (
 from app.database.repositories.users import (
     User as UsersRepository
 )
+from app.decorators import user_forbidden
 from app.helpers.security import Security
 from app.helpers.util import GeneralHelpers
-from app.decorators import user_forbidden
 
 
 users_repository = UsersRepository()

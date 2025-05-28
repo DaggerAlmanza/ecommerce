@@ -1,5 +1,5 @@
-from celery import Celery
 import os
+from celery import Celery
 
 
 def make_celery():
