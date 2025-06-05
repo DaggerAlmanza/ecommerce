@@ -15,6 +15,7 @@ from app.database.repositories.carts import (
 from app.database.repositories.cart_items import (
     CartItem as CartItemsRepository
 )
+from app.database.models import CartItems as CartItemsModel
 from app.database.repositories.orders import (
     Orders as OrdersRepository
 )
@@ -40,6 +41,7 @@ class OrdersService:
         self.cart = cart_repository
         self.cart_items = cart_items_repository
         self.products = products_repository
+        self.total_amount = None
 
     @admin_forbidden
     @ensure_cart_and_items_exist
@@ -104,6 +106,26 @@ class OrdersService:
                 "status_code": INTERNAL_SERVER_ERROR
             }
 
+    def _prepare_order_details(self, cart_items: list[CartItemsModel]) -> list:
+        """
+        Prepara la lista de order_items y calcula el monto total del pedido.
+        """
+        cart_items_to_json = [
+            data_json.to_json() for data_json in cart_items
+        ]
+        order_items = []
+        self.total_amount = Decimal(0)
+        for item in cart_items_to_json:
+            self.total_amount += Decimal(item.get("price_at_add"))
+            order_items.append(
+                {
+                    "product_id": item.get("product_id"),
+                    "quantity": item.get("quantity"),
+                    "price_at_purchase": item.get("price_at_add")
+                }
+            )
+        return order_items
+
     def _process_order_creation(self, user: Dict[str, Any]) -> Dict[str, Any]:
         print("Procesando la orden")
         cart_id = self.cart.get_card_id_by_user_id(
@@ -129,23 +151,10 @@ class OrdersService:
             else:
                 product.stock_quantity -= quantity
         if cart_items:
-            cart_items_to_json = [
-                data_json.to_json() for data_json in cart_items
-            ]
-            order_items = []
-            total_amount = Decimal(0)
-            for item in cart_items_to_json:
-                total_amount += Decimal(item["price_at_add"])
-                order_items.append(
-                    {
-                        "product_id": item["product_id"],
-                        "quantity": item["quantity"],
-                        "price_at_purchase": item["price_at_add"]
-                    }
-                )
+            order_items = self._prepare_order_details(cart_items)
             orders = {
                 "user_id": user.get("id"),
-                "total_amount": total_amount,
+                "total_amount": self.total_amount,
                 "status": "PENDING"
             }
             response = self.orders_repository.create_with_transaction(

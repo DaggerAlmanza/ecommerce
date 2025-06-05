@@ -10,37 +10,38 @@ from app.controllers.views import (
     users,
 )
 
+API_VERSION = "/api/v1"
 urls = APIRouter()
 
 
 urls.include_router(
     users.router,
-    prefix="/api/v1",
+    prefix=API_VERSION,
 )
 
 urls.include_router(
     carts.router,
-    prefix="/api/v1",
+    prefix=API_VERSION,
 )
 
 urls.include_router(
     products.router,
-    prefix="/api/v1",
+    prefix=API_VERSION,
 )
 
 urls.include_router(
     cart_items.router,
-    prefix="/api/v1",
+    prefix=API_VERSION,
 )
 
 urls.include_router(
     order_items.router,
-    prefix="/api/v1",
+    prefix=API_VERSION,
 )
 
 urls.include_router(
     orders.router,
-    prefix="/api/v1",
+    prefix=API_VERSION,
 )
 
 urls.include_router(

@@ -185,3 +185,4 @@ tests.py
 /image/*
 .$Flujo.drawio.dtmp
 .scannerwork/
+build.yml

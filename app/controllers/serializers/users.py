@@ -20,6 +20,7 @@ class User(BaseModel):
 
 
 class UserAuthentication(BaseModel):
+    id: int = Field(..., description="User ID")
     username: str = Field(..., description="Username")
     email: EmailStr = Field(..., description="Email")
     role: str

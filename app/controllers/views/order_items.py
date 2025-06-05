@@ -21,7 +21,7 @@ order_items_service = OrderItemsService()
 async def get_all_order_items(
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = order_items_service.get_all()
+    response = order_items_service.get_all(current_user)
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response
@@ -52,7 +52,7 @@ async def get_order_items(
     id: int,
     current_user: Annotated[dict, Depends(get_current_user)]
 ):
-    response = order_items_service.get_by_id(id)
+    response = order_items_service.get_by_id(id, current_user)
     return JSONResponse(
         status_code=response.pop("status_code"),
         content=response

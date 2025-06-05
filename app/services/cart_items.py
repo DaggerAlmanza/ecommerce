@@ -49,6 +49,12 @@ class CartItemsService:
     @admin_forbidden
     def save(self, user: dict, data: dict) -> dict:
         self.get_product_by_id(data.get("product_id"))
+        if not self.product:
+            return {
+                "data": {},
+                "message": "El producto no existe",
+                "status_code": UNPROCESSABLE_ENTITY
+            }
         if not self.verify_exitence_of_product(data.get("quantity")):
             return {
                 "data": {},

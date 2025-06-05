@@ -104,7 +104,7 @@ docker network create ecommerce
 
 6. Inicia el contenedor de Redis:
 ```sh
-docker run --name redis -p 6377:6379 -d redis redis-server --network ecommerce --port 6379
+docker run --name redis --net ecommerce -p 6377:6379 -d redis redis-server --port 6379
 ```
 
 7. Inicia el contenedor de PostgreSQL:
@@ -197,7 +197,7 @@ POST: Crear un nuevo usuario (admin o user).
 
 14. http://127.0.0.1:8000/api/v1/order_items/{id}
 
-- GET: Obtener un artículo de orden por ID (solo admin).
+- GET: Obtener un artículo de orden por ID (admin o el creador del artículo).
 
 15. http://127.0.0.1:8000/api/v1/order_items/user
 

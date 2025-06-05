@@ -1,10 +1,12 @@
 from app.config.constants import (
     CREATED, OK, FORBIDDEN,
-    NOT_ALLOWED, NO_EXISTENT_PRODUCT
+    NOT_ALLOWED, NO_EXISTENT_PRODUCT,
+    ADMIN_ROL
 )
 from app.database.repositories.order_items import (
     OrderItems as OrderItemsRepository
 )
+from app.services.users import user_forbidden
 
 
 order_items_repository = OrderItemsRepository()
@@ -28,18 +30,32 @@ class OrderItemsService:
             "status_code": CREATED if response else OK
         }
 
-    def get_by_id(self, id: int) -> dict:
-        response = self.order_items_repository.get_by_id(id)
-        if response:
-            response = response.to_json()
+    def _get_order_list_by_user(self, user: dict) -> list:
+        response = self.order_items_repository.get_all_by_user(
+            user.get("id")
+        )
+        order_list = [item.id for item in response]
+        return order_list
+
+    def get_by_id(self, id: int, user: dict) -> dict:
+        if id in self._get_order_list_by_user(user) or user.get("role") == ADMIN_ROL:
+            response = self.order_items_repository.get_by_id(id)
+            if response:
+                response = response.to_json()
+            return {
+                "data": response if response else {},
+                "message":
+                    "El producto consultado" if response else NO_EXISTENT_PRODUCT,
+                "status_code": OK
+            }
         return {
-            "data": response if response else {},
-            "message":
-                "El producto consultado" if response else NO_EXISTENT_PRODUCT,
-            "status_code": OK
+            "data": {},
+            "message": NOT_ALLOWED,
+            "status_code": FORBIDDEN
         }
 
-    def get_all(self) -> dict:
+    @user_forbidden
+    def get_all(self, user: dict) -> dict:
         response = self.order_items_repository.get_all()
         response = [data_json.to_json() for data_json in response]
         return {
